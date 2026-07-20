@@ -100,7 +100,11 @@ export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
                   onChange={() => setType('render')}
                 />
                 <div className="type-card">
-                  <div className="type-icon render-icon">⚡</div>
+                  <div className="type-icon render-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                  </div>
                   <div className="type-info">
                     <span className="type-title">Render App</span>
                     <span className="type-desc">Web App / API</span>
@@ -117,7 +121,11 @@ export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
                   onChange={() => setType('supabase')}
                 />
                 <div className="type-card">
-                  <div className="type-icon supabase-icon">⚡</div>
+                  <div className="type-icon supabase-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M13.35 2.5C13.67 2.5 13.9 2.8 13.78 3.09L10.75 10.5H18.5C18.96 10.5 19.22 11.02 18.93 11.38L9.93 22.38C9.62 22.76 9.01 22.5 9.09 22.02L11.5 13.5H4C3.51 13.5 3.25 12.93 3.56 12.56L12.56 2.69C12.76 2.57 13.06 2.5 13.35 2.5Z" fill="#3ECF8E"/>
+                    </svg>
+                  </div>
                   <div className="type-info">
                     <span className="type-title">Supabase</span>
                     <span className="type-desc">REST / Database</span>
@@ -134,7 +142,11 @@ export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
                   onChange={() => setType('custom')}
                 />
                 <div className="type-card">
-                  <div className="type-icon custom-icon">🌐</div>
+                  <div className="type-icon custom-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                  </div>
                   <div className="type-info">
                     <span className="type-title">Custom HTTP</span>
                     <span className="type-desc">Generic URL</span>

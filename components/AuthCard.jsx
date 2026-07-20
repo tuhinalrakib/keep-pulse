@@ -57,6 +57,18 @@ export default function AuthCard({ onAuthSuccess }) {
       }
 
       localStorage.setItem('keepalive_token', data.token);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Successful!',
+        text: `Welcome back, ${data.user.name || 'Developer'}!`,
+        background: '#0e1626',
+        color: '#f8fafc',
+        iconColor: '#10b981',
+        showConfirmButton: false,
+        timer: 1500
+      });
+
       onAuthSuccess(data.user, data.token);
     } catch (err) {
       showSwal('Connection Error', err.message, 'error');
@@ -88,8 +100,26 @@ export default function AuthCard({ onAuthSuccess }) {
         return;
       }
 
-      localStorage.setItem('keepalive_token', data.token);
-      onAuthSuccess(data.user, data.token);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful!',
+        text: 'Your account has been created successfully. Please sign in with your credentials.',
+        background: '#0e1626',
+        color: '#f8fafc',
+        confirmButtonColor: '#00f2fe',
+        iconColor: '#10b981',
+        confirmButtonText: 'Proceed to Login'
+      });
+
+      // Clear reg form & set login email for easy login
+      setLoginEmail(regEmail.trim());
+      setRegName('');
+      setRegEmail('');
+      setRegPassword('');
+      setRegConfirmPassword('');
+
+      // Switch to Login Tab
+      setActiveTab('login');
     } catch (err) {
       showSwal('Connection Error', err.message, 'error');
       setAuthAlert(err.message);

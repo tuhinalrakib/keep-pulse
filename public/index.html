@@ -257,20 +257,6 @@
           </table>
         </div>
       </div>
-
-      <!-- Self Keep-Alive Banner -->
-      <div class="self-ping-card">
-        <div class="self-ping-glow"></div>
-        <div class="self-ping-icon">🛡️</div>
-        <div class="self-ping-content">
-          <h3>Self-Sustaining Bot Protection</h3>
-          <p>Prevent this KeepPulse instance from idling on Render Free Tier. Attach your health check endpoint to an external monitoring tool or set <code class="code-badge">BOT_SELF_URL</code> in environment variables.</p>
-        </div>
-        <button class="btn btn-cyan btn-sm" onclick="copyHealthUrl()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy Health URL
-        </button>
-      </div>
     </main>
 
     <!-- Add / Edit Target Modal -->
@@ -300,7 +286,11 @@
               <label class="type-option">
                 <input type="radio" name="targetTypeRadio" value="render" checked onchange="onTypeRadioChange('render')">
                 <div class="type-card">
-                  <div class="type-icon render-icon">⚡</div>
+                  <div class="type-icon render-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                  </div>
                   <div class="type-info">
                     <span class="type-title">Render App</span>
                     <span class="type-desc">Web App / API</span>
@@ -311,7 +301,11 @@
               <label class="type-option">
                 <input type="radio" name="targetTypeRadio" value="supabase" onchange="onTypeRadioChange('supabase')">
                 <div class="type-card">
-                  <div class="type-icon supabase-icon">⚡</div>
+                  <div class="type-icon supabase-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M13.35 2.5C13.67 2.5 13.9 2.8 13.78 3.09L10.75 10.5H18.5C18.96 10.5 19.22 11.02 18.93 11.38L9.93 22.38C9.62 22.76 9.01 22.5 9.09 22.02L11.5 13.5H4C3.51 13.5 3.25 12.93 3.56 12.56L12.56 2.69C12.76 2.57 13.06 2.5 13.35 2.5Z" fill="#3ECF8E"/>
+                    </svg>
+                  </div>
                   <div class="type-info">
                     <span class="type-title">Supabase</span>
                     <span class="type-desc">REST / Database</span>
@@ -322,7 +316,11 @@
               <label class="type-option">
                 <input type="radio" name="targetTypeRadio" value="custom" onchange="onTypeRadioChange('custom')">
                 <div class="type-card">
-                  <div class="type-icon custom-icon">🌐</div>
+                  <div class="type-icon custom-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                  </div>
                   <div class="type-info">
                     <span class="type-title">Custom HTTP</span>
                     <span class="type-desc">Generic URL</span>
@@ -367,6 +365,6 @@
     </div>
   </div>
 
-  <script src="/js/app.js"></script>
+  <script src="/js/app.js?v=2"></script>
 </body>
 </html>

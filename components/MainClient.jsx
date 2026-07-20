@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import Navbar from '@/components/Navbar';
 import AuthCard from '@/components/AuthCard';
 import Dashboard from '@/components/Dashboard';
@@ -69,6 +70,16 @@ export default function MainClient() {
     if (!res.ok) {
       throw new Error(data.error || 'Failed to save target endpoint');
     }
+
+    Swal.fire({
+      icon: 'success',
+      title: isEdit ? 'Target Updated' : 'Target Added',
+      text: `Service "${targetData.name}" has been configured successfully.`,
+      background: '#0e1626',
+      color: '#f8fafc',
+      confirmButtonColor: '#00f2fe',
+      iconColor: '#10b981'
+    });
   };
 
   if (loading) {

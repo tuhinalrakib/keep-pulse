@@ -129,6 +129,19 @@ async function handleLogin(e) {
     state.user = data.user;
     localStorage.setItem('keepalive_token', data.token);
 
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Successful!',
+        text: `Welcome back, ${data.user.name || 'Developer'}!`,
+        background: '#0e1626',
+        color: '#f8fafc',
+        iconColor: '#10b981',
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+
     showDashboard();
   } catch (err) {
     showSwalAlert('Connection Error', err.message, 'error');
@@ -163,11 +176,27 @@ async function handleRegister(e) {
       return;
     }
 
-    state.token = data.token;
-    state.user = data.user;
-    localStorage.setItem('keepalive_token', data.token);
+    if (typeof Swal !== 'undefined') {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful!',
+        text: 'Your account has been created successfully. Please sign in with your credentials.',
+        background: '#0e1626',
+        color: '#f8fafc',
+        confirmButtonColor: '#00f2fe',
+        iconColor: '#10b981',
+        confirmButtonText: 'Proceed to Login'
+      });
+    }
 
-    showDashboard();
+    // Reset registration form
+    document.getElementById('registerForm').reset();
+
+    // Pre-fill login email input
+    document.getElementById('loginEmail').value = email;
+
+    // Switch tab to Login page
+    switchAuthTab('login');
   } catch (err) {
     showSwalAlert('Connection Error', err.message, 'error');
     showAuthAlert(err.message);
@@ -282,6 +311,34 @@ function updateMetrics() {
   }
 }
 
+function getPlatformBadge(type) {
+  if (type === 'render') {
+    return `
+      <span class="type-pill type-render">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align: -2px; margin-right: 3px;">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        RENDER
+      </span>`;
+  } else if (type === 'supabase') {
+    return `
+      <span class="type-pill type-supabase">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block; vertical-align: -2px; margin-right: 3px;">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M13.35 2.5C13.67 2.5 13.9 2.8 13.78 3.09L10.75 10.5H18.5C18.96 10.5 19.22 11.02 18.93 11.38L9.93 22.38C9.62 22.76 9.01 22.5 9.09 22.02L11.5 13.5H4C3.51 13.5 3.25 12.93 3.56 12.56L12.56 2.69C12.76 2.57 13.06 2.5 13.35 2.5Z" fill="#3ECF8E"/>
+        </svg>
+        SUPABASE
+      </span>`;
+  } else {
+    return `
+      <span class="type-pill type-custom">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align: -2px; margin-right: 3px;">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        CUSTOM
+      </span>`;
+  }
+}
+
 /* Render Targets Grid */
 function renderTargets() {
   const container = document.getElementById('targetsGrid');
@@ -303,12 +360,7 @@ function renderTargets() {
 
     const statusBadgeClass = isSuccess ? 'status-success' : isError ? 'status-error' : 'status-pending';
     const statusLabel = isSuccess ? '🟢 Online' : isError ? '🔴 Error / Offline' : '🟡 Pending';
-
-    const typeClass = target.type === 'render' ? 'type-render' :
-                      target.type === 'supabase' ? 'type-supabase' : 'type-custom';
-
-    const typeIcon = target.type === 'render' ? '⚡ Render' :
-                     target.type === 'supabase' ? '⚡ Supabase' : '🌐 Custom';
+    const platformBadge = getPlatformBadge(target.type);
 
     const lastPingStr = target.lastPingAt ? new Date(target.lastPingAt).toLocaleTimeString() : 'Never';
     
@@ -324,7 +376,7 @@ function renderTargets() {
       <div class="target-card">
         <div>
           <div class="target-top">
-            <span class="type-pill ${typeClass}">${typeIcon}</span>
+            ${platformBadge}
             <span class="status-badge ${statusBadgeClass}">${statusLabel}</span>
           </div>
 
@@ -412,13 +464,14 @@ function renderLogs() {
       ? `<span class="status-badge status-success">HTTP ${log.statusCode || 200}</span>`
       : `<span class="status-badge status-error">HTTP ${log.statusCode || 0}</span>`;
 
+    const platformBadge = getPlatformBadge(log.type);
     const timeStr = new Date(log.timestamp).toLocaleString();
 
     return `
       <tr>
         <td class="font-mono" style="font-size: 0.8rem;">${timeStr}</td>
         <td><strong>${escapeHtml(log.targetName)}</strong></td>
-        <td><span class="type-pill type-${log.type}">${log.type}</span></td>
+        <td>${platformBadge}</td>
         <td>${statusChip}</td>
         <td class="font-mono">${log.responseTimeMs ? log.responseTimeMs + 'ms' : '--'}</td>
         <td class="font-mono" style="font-size: 0.8rem; color: var(--text-dim);">${escapeHtml(log.message || '')}</td>
@@ -518,16 +571,34 @@ async function handleSaveTarget(e) {
     if (!res.ok) throw new Error(data.error || 'Failed to save service target');
 
     closeTargetModal();
+    showSwalAlert(isEdit ? 'Target Updated' : 'Target Added', `Service "${name}" configured successfully.`, 'success');
     loadDashboardData();
   } catch (err) {
-    const alert = document.getElementById('modalAlert');
-    alert.textContent = err.message;
-    alert.style.display = 'flex';
+    const alertBox = document.getElementById('modalAlert');
+    if (alertBox) {
+      alertBox.textContent = err.message;
+      alertBox.style.display = 'flex';
+    }
+    showSwalAlert('Save Failed', err.message, 'error');
   }
 }
 
 async function deleteTarget(id) {
-  if (!confirm('Are you sure you want to remove this service target from monitoring?')) return;
+  const result = await Swal.fire({
+    title: 'Remove Target Service?',
+    text: 'Are you sure you want to stop monitoring this target endpoint?',
+    icon: 'warning',
+    showCancelButton: true,
+    background: '#0e1626',
+    color: '#f8fafc',
+    confirmButtonColor: '#f43f5e',
+    cancelButtonColor: '#1e293b',
+    confirmButtonText: 'Yes, Delete Service',
+    cancelButtonText: 'Cancel',
+    iconColor: '#f59e0b'
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     const res = await fetch(`${API_BASE}/services/${id}`, {
@@ -535,11 +606,13 @@ async function deleteTarget(id) {
       headers: { 'Authorization': `Bearer ${state.token}` }
     });
 
-    if (!res.ok) throw new Error('Failed to delete service target');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete service target');
 
+    showSwalAlert('Service Deleted', 'Target endpoint removed successfully.', 'success');
     loadDashboardData();
   } catch (err) {
-    alert(err.message);
+    showSwalAlert('Delete Failed', err.message, 'error');
   }
 }
 
@@ -557,9 +630,10 @@ async function pingTargetNow(id, btnElement) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Ping failed');
 
+    showSwalAlert('Ping Triggered', 'Target pinged successfully!', 'success');
     loadDashboardData();
   } catch (err) {
-    alert('Ping execution failed: ' + err.message);
+    showSwalAlert('Ping Failed', err.message, 'error');
     btnElement.innerHTML = originalText;
     btnElement.disabled = false;
   }
@@ -568,9 +642,18 @@ async function pingTargetNow(id, btnElement) {
 function copyHealthUrl() {
   const healthUrl = `${window.location.origin}/api/health`;
   navigator.clipboard.writeText(healthUrl).then(() => {
-    alert(`Health Check Endpoint copied to clipboard:\n${healthUrl}`);
+    showSwalAlert('Copied to Clipboard', healthUrl, 'success');
   }).catch(() => {
-    prompt('Copy your bot health check URL:', healthUrl);
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        title: 'Health Check URL',
+        input: 'text',
+        inputValue: healthUrl,
+        background: '#0e1626',
+        color: '#f8fafc',
+        confirmButtonColor: '#00f2fe'
+      });
+    }
   });
 }
 
