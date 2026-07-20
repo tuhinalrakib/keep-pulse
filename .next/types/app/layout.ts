@@ -1,4 +1,4 @@
-// File: D:\Projects\web-scrapping\bot\app\layout.js
+// File: D:\Projects\web-scrapping\keep-pulse\app\layout.js
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -38,7 +38,9 @@ async function pingTarget(target) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+    // Render free tier cold starts can take 20-40 seconds to spin up, so use 45s timeout
+    const pingTimeoutMs = target.type === 'render' ? 45000 : 30000;
+    const timeoutId = setTimeout(() => controller.abort(), pingTimeoutMs);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -89,7 +91,8 @@ async function pingTarget(target) {
     const responseTimeMs = Date.now() - startTime;
     let errMessage = err.message;
     if (err.name === 'AbortError') {
-      errMessage = 'Request Timed Out (15s)';
+      const timeoutSec = target.type === 'render' ? 45 : 30;
+      errMessage = `Request Timed Out (${timeoutSec}s)`;
     }
 
     const targetId = target._id || target.id;

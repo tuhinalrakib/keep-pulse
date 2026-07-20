@@ -1,4 +1,4 @@
-// File: D:\Projects\web-scrapping\bot\app\api\auth\me\route.js
+// File: D:\Projects\web-scrapping\keep-pulse\app\api\auth\me\route.js
 import * as entry from '../../../../../../app/api/auth/me/route.js'
 import type { NextRequest } from 'next/server.js'
 
