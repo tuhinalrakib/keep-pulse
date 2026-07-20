@@ -1,8 +1,8 @@
-// File: D:\Projects\web-scrapping\keep-pulse\app\api\auth\me\route.js
-import * as entry from '../../../../../../app/api/auth/me/route.js'
+// File: D:\Projects\web-scrapping\keep-pulse\app\api\services\[id]\ping\route.js
+import * as entry from '../../../../../../../app/api/services/[id]/ping/route.js'
 import type { NextRequest } from 'next/server.js'
 
-type TEntry = typeof import('../../../../../../app/api/auth/me/route.js')
+type TEntry = typeof import('../../../../../../../app/api/services/[id]/ping/route.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{

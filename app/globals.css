@@ -699,10 +699,12 @@ body {
   box-shadow: var(--shadow-card);
 }
 
+.target-card-header,
 .target-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   margin-bottom: 1rem;
 }
 
