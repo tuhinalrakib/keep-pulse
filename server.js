@@ -26,7 +26,7 @@ app.use('/api/services', servicesRouter);
 app.use('/api/logs', logsRouter);
 
 // Health check / Keep-Alive endpoint for external pingers & self-pings
-app.get(['/api/health', '/ping'], async (req, res) => {
+const handleHealthCheck = async (req, res) => {
   try {
     const activeTargetsCount = await Target.countDocuments({ isActive: true });
     res.json({
@@ -39,10 +39,13 @@ app.get(['/api/health', '/ping'], async (req, res) => {
   } catch (err) {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   }
-});
+};
 
-// Fallback to index.html for SPA routes
-app.get('*', (req, res) => {
+app.get('/api/health', handleHealthCheck);
+app.get('/ping', handleHealthCheck);
+
+// Fallback to index.html for SPA routes (Catch-all fallback middleware)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
