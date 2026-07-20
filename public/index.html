@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeepPulse Pro | Render & Supabase Uptime Sentinel</title>
+  <meta name="description" content="Next-generation keep-alive bot & uptime monitoring dashboard for Render apps, Supabase databases, and custom REST APIs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <!-- Ambient Glow Backdrop -->
+  <div class="ambient-backdrop">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+    <div class="grid-pattern"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <a href="#" class="brand">
+        <div class="brand-icon-wrapper">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <div class="icon-glow"></div>
+        </div>
+        <div class="brand-text">Keep<span>Pulse</span> <span class="badge-pro">PRO</span></div>
+      </a>
+
+      <!-- Live Status Pill -->
+      <div id="globalStatusPill" class="status-pill status-pill-active" style="display: none;">
+        <span class="pulse-dot"></span>
+        <span id="statusPillText">Systems Operational</span>
+      </div>
+
+      <div id="userProfile" class="user-profile" style="display: none;">
+        <div class="user-info">
+          <div id="userAvatar" class="user-avatar">U</div>
+          <div class="user-details">
+            <span id="userName" class="user-name">User Name</span>
+            <span id="userEmail" class="user-email">user@example.com</span>
+          </div>
+        </div>
+        <button id="logoutBtn" class="btn btn-ghost btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
+        </button>
+      </div>
+    </header>
+
+    <!-- Auth View -->
+    <main id="authSection" class="auth-wrapper">
+      <div class="auth-card">
+        <div class="auth-brand-badge">
+          <div class="brand-icon">⚡</div>
+        </div>
+        <div class="auth-header">
+          <h2>Sentinel Control Center</h2>
+          <p>Automated keep-alive engine for Render & Supabase</p>
+        </div>
+
+        <div id="authAlert" class="alert alert-error" style="display: none;"></div>
+
+        <div class="auth-tabs">
+          <button id="tabLogin" class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+          <button id="tabRegister" class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email Address</label>
+            <div class="input-with-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <input type="email" id="loginEmail" class="form-input" placeholder="developer@company.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <div class="input-with-icon password-input-wrapper">
+              <svg class="input-icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)" title="Toggle password visibility">
+                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                <svg class="eye-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">
+            Sign In to Dashboard
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" style="display: none;">
+          <div class="form-group">
+            <label for="regName">Full Name</label>
+            <div class="input-with-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="regName" class="form-input" placeholder="Alex Morgan" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regEmail">Email Address</label>
+            <div class="input-with-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <input type="email" id="regEmail" class="form-input" placeholder="alex@company.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regPassword">Password</label>
+            <div class="input-with-icon password-input-wrapper">
+              <svg class="input-icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="regPassword" class="form-input" placeholder="At least 6 characters" required minlength="6">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('regPassword', this)" title="Toggle password visibility">
+                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                <svg class="eye-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regConfirmPassword">Confirm Password</label>
+            <div class="input-with-icon password-input-wrapper">
+              <svg class="input-icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="regConfirmPassword" class="form-input" placeholder="Re-enter password" required minlength="6">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('regConfirmPassword', this)" title="Toggle password visibility">
+                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                <svg class="eye-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">
+            Create Free Account
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Dashboard View -->
+    <main id="dashboardSection" style="display: none;">
+      <!-- Hero Stat Cards Grid -->
+      <div class="stats-grid">
+        <div class="stat-card stat-cyan">
+          <div class="stat-header">
+            <span class="stat-title">Monitored Services</span>
+            <div class="stat-icon-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            </div>
+          </div>
+          <div id="statTotalTargets" class="stat-value">0</div>
+          <div class="stat-footer">Target endpoints in sentinel</div>
+        </div>
+
+        <div class="stat-card stat-green">
+          <div class="stat-header">
+            <span class="stat-title">Active Health Checks</span>
+            <div class="stat-icon-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+          </div>
+          <div id="statActiveTargets" class="stat-value">0</div>
+          <div class="stat-footer">Interval cron workers running</div>
+        </div>
+
+        <div class="stat-card stat-purple">
+          <div class="stat-header">
+            <span class="stat-title">Ping Success Rate</span>
+            <div class="stat-icon-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+          </div>
+          <div id="statSuccessRate" class="stat-value">100%</div>
+          <div class="stat-footer">Uptime ratio across checks</div>
+        </div>
+
+        <div class="stat-card stat-amber">
+          <div class="stat-header">
+            <span class="stat-title">Recorded Pings</span>
+            <div class="stat-icon-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+          </div>
+          <div id="statTotalLogs" class="stat-value">0</div>
+          <div class="stat-footer">Historical log entries</div>
+        </div>
+      </div>
+
+      <!-- Target Services Header -->
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Keep-Alive Targets</h2>
+          <p class="section-subtitle">Render apps, Supabase APIs and endpoints automatically pinged on interval</p>
+        </div>
+        <button class="btn btn-primary" onclick="openTargetModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Monitored Service
+        </button>
+      </div>
+
+      <!-- Targets Grid -->
+      <div id="targetsGrid" class="targets-grid">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Ping Logs Section -->
+      <div class="logs-card">
+        <div class="logs-header">
+          <div>
+            <h2 class="section-title">Telemetry & Activity Stream</h2>
+            <p class="section-subtitle">Real-time keep-alive response times, HTTP statuses and status codes</p>
+          </div>
+          <button id="refreshLogsBtn" class="btn btn-secondary btn-sm" onclick="loadDashboardData()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh Feed
+          </button>
+        </div>
+
+        <div class="logs-controls">
+          <div class="input-with-icon" style="max-width: 320px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="logSearchInput" class="form-input" placeholder="Search target name, status..." oninput="filterLogs()">
+          </div>
+          <select id="logTargetFilter" class="form-select" style="max-width: 220px;" onchange="filterLogs()">
+            <option value="">All Monitored Targets</option>
+          </select>
+        </div>
+
+        <div class="logs-table-wrapper">
+          <table class="logs-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Service Name</th>
+                <th>Platform</th>
+                <th>Status</th>
+                <th>Latency</th>
+                <th>Response Details</th>
+              </tr>
+            </thead>
+            <tbody id="logsTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Self Keep-Alive Banner -->
+      <div class="self-ping-card">
+        <div class="self-ping-glow"></div>
+        <div class="self-ping-icon">🛡️</div>
+        <div class="self-ping-content">
+          <h3>Self-Sustaining Bot Protection</h3>
+          <p>Prevent this KeepPulse instance from idling on Render Free Tier. Attach your health check endpoint to an external monitoring tool or set <code class="code-badge">BOT_SELF_URL</code> in environment variables.</p>
+        </div>
+        <button class="btn btn-cyan btn-sm" onclick="copyHealthUrl()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Health URL
+        </button>
+      </div>
+    </main>
+
+    <!-- Add / Edit Target Modal -->
+    <div id="targetModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h3 id="modalTitle" class="modal-title">Configure Target Endpoint</h3>
+            <p class="modal-subtitle">Set up automated ping checks to keep service awake</p>
+          </div>
+          <button class="modal-close" onclick="closeTargetModal()">&times;</button>
+        </div>
+
+        <div id="modalAlert" class="alert alert-error" style="display: none;"></div>
+
+        <form id="targetForm">
+          <input type="hidden" id="targetId">
+          
+          <div class="form-group">
+            <label for="targetName">Service Name</label>
+            <input type="text" id="targetName" class="form-input" placeholder="e.g. Core API Service or Supabase Auth DB" required>
+          </div>
+
+          <div class="form-group">
+            <label for="targetType">Platform / Service Type</label>
+            <div class="type-selector-grid">
+              <label class="type-option">
+                <input type="radio" name="targetTypeRadio" value="render" checked onchange="onTypeRadioChange('render')">
+                <div class="type-card">
+                  <div class="type-icon render-icon">⚡</div>
+                  <div class="type-info">
+                    <span class="type-title">Render App</span>
+                    <span class="type-desc">Web App / API</span>
+                  </div>
+                </div>
+              </label>
+
+              <label class="type-option">
+                <input type="radio" name="targetTypeRadio" value="supabase" onchange="onTypeRadioChange('supabase')">
+                <div class="type-card">
+                  <div class="type-icon supabase-icon">⚡</div>
+                  <div class="type-info">
+                    <span class="type-title">Supabase</span>
+                    <span class="type-desc">REST / Database</span>
+                  </div>
+                </div>
+              </label>
+
+              <label class="type-option">
+                <input type="radio" name="targetTypeRadio" value="custom" onchange="onTypeRadioChange('custom')">
+                <div class="type-card">
+                  <div class="type-icon custom-icon">🌐</div>
+                  <div class="type-info">
+                    <span class="type-title">Custom HTTP</span>
+                    <span class="type-desc">Generic URL</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <input type="hidden" id="targetType" value="render">
+          </div>
+
+          <div class="form-group">
+            <label for="targetUrl">Target HTTPS URL</label>
+            <input type="url" id="targetUrl" class="form-input" placeholder="https://my-service.onrender.com" required>
+            <div id="urlHelpText" class="form-help">Enter full HTTPS URL of your web app or API endpoint.</div>
+          </div>
+
+          <div id="apiKeyGroup" class="form-group" style="display: none;">
+            <label for="targetApiKey">Supabase Anon / Public API Key</label>
+            <input type="text" id="targetApiKey" class="form-input font-mono" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+            <div class="form-help">Found in Supabase Dashboard → Settings → API → anon public key.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="targetInterval">Ping Interval</label>
+            <select id="targetInterval" class="form-select">
+              <option value="5">Every 5 minutes (Recommended for Render Free Tier)</option>
+              <option value="10">Every 10 minutes</option>
+              <option value="15">Every 15 minutes</option>
+              <option value="30">Every 30 minutes</option>
+              <option value="60">Every 60 minutes (Recommended for Supabase DB)</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" id="saveTargetBtn" class="btn btn-primary btn-full">
+              Save & Start Sentinel
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="closeTargetModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
