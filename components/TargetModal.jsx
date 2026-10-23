@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 
 export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
   const [name, setName] = useState('');
@@ -8,7 +9,6 @@ export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
   const [url, setUrl] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [intervalMinutes, setIntervalMinutes] = useState('5');
-  const [modalAlert, setModalAlert] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -25,17 +25,27 @@ export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
       setApiKey('');
       setIntervalMinutes('5');
     }
-    setModalAlert('');
   }, [targetToEdit, isOpen]);
 
   if (!isOpen) return null;
 
+  const showSwal = (title, text, icon = 'error') => {
+    Swal.fire({
+      icon: icon,
+      title: title,
+      text: text,
+      background: '#0e1626',
+      color: '#f8fafc',
+      confirmButtonColor: '#00f2fe',
+      iconColor: icon === 'error' ? '#f43f5e' : '#10b981'
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setModalAlert('');
 
     if (!name.trim() || !url.trim()) {
-      setModalAlert('Please fill out all required fields.');
+      showSwal('Validation Error', 'Please fill out all required fields.', 'error');
       return;
     }
 
@@ -51,7 +61,7 @@ export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
       });
       onClose();
     } catch (err) {
-      setModalAlert(err.message || 'Failed to save service target.');
+      showSwal('Save Failed', err.message || 'Failed to save service target.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -69,10 +79,6 @@ export default function TargetModal({ isOpen, onClose, onSave, targetToEdit }) {
           </div>
           <button className="modal-close" onClick={onClose}>&times;</button>
         </div>
-
-        {modalAlert ? (
-          <div className="alert alert-error">{modalAlert}</div>
-        ) : null}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">

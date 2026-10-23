@@ -5,7 +5,6 @@ import Swal from 'sweetalert2';
 
 export default function AuthCard({ onAuthSuccess }) {
   const [activeTab, setActiveTab] = useState('login');
-  const [authAlert, setAuthAlert] = useState('');
 
   // Login state
   const [loginEmail, setLoginEmail] = useState('');
@@ -34,7 +33,6 @@ export default function AuthCard({ onAuthSuccess }) {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setAuthAlert('');
 
     try {
       const res = await fetch('/api/auth/login', {
@@ -52,7 +50,6 @@ export default function AuthCard({ onAuthSuccess }) {
         } else {
           showSwal('Login Failed', data.error || 'Authentication failed', 'error');
         }
-        setAuthAlert(data.error || 'Authentication failed');
         return;
       }
 
@@ -72,17 +69,14 @@ export default function AuthCard({ onAuthSuccess }) {
       onAuthSuccess(data.user, data.token);
     } catch (err) {
       showSwal('Connection Error', err.message, 'error');
-      setAuthAlert(err.message);
     }
   };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    setAuthAlert('');
 
     if (regPassword !== regConfirmPassword) {
       showSwal('Password Mismatch', 'Password did not match', 'error');
-      setAuthAlert('Password did not match');
       return;
     }
 
@@ -96,7 +90,6 @@ export default function AuthCard({ onAuthSuccess }) {
 
       if (!res.ok) {
         showSwal('Registration Error', data.error || 'Account creation failed', 'error');
-        setAuthAlert(data.error || 'Account creation failed');
         return;
       }
 
@@ -122,7 +115,6 @@ export default function AuthCard({ onAuthSuccess }) {
       setActiveTab('login');
     } catch (err) {
       showSwal('Connection Error', err.message, 'error');
-      setAuthAlert(err.message);
     }
   };
 
@@ -137,20 +129,16 @@ export default function AuthCard({ onAuthSuccess }) {
           <p>Automated keep-alive engine for Render & Supabase</p>
         </div>
 
-        {authAlert ? (
-          <div className="alert alert-error">{authAlert}</div>
-        ) : null}
-
         <div className="auth-tabs">
           <button
             className={`auth-tab ${activeTab === 'login' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('login'); setAuthAlert(''); }}
+            onClick={() => setActiveTab('login')}
           >
             Sign In
           </button>
           <button
             className={`auth-tab ${activeTab === 'register' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('register'); setAuthAlert(''); }}
+            onClick={() => setActiveTab('register')}
           >
             Create Account
           </button>

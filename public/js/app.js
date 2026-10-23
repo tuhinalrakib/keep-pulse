@@ -121,7 +121,6 @@ async function handleLogin(e) {
       } else {
         showSwalAlert('Login Failed', data.error || 'Authentication failed', 'error');
       }
-      showAuthAlert(data.error || 'Authentication failed');
       return;
     }
 
@@ -145,7 +144,6 @@ async function handleLogin(e) {
     showDashboard();
   } catch (err) {
     showSwalAlert('Connection Error', err.message, 'error');
-    showAuthAlert(err.message);
   }
 }
 
@@ -158,7 +156,6 @@ async function handleRegister(e) {
 
   if (confirmPassword && password !== confirmPassword) {
     showSwalAlert('Password Mismatch', 'Password did not match', 'error');
-    showAuthAlert('Password did not match');
     return;
   }
 
@@ -172,7 +169,6 @@ async function handleRegister(e) {
 
     if (!res.ok) {
       showSwalAlert('Registration Error', data.error || 'Account creation failed', 'error');
-      showAuthAlert(data.error || 'Account creation failed');
       return;
     }
 
@@ -199,7 +195,6 @@ async function handleRegister(e) {
     switchAuthTab('login');
   } catch (err) {
     showSwalAlert('Connection Error', err.message, 'error');
-    showAuthAlert(err.message);
   }
 }
 
